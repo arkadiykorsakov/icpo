@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             CountrySeeder::class,
             CitySeeder::class,
             LanguageSeeder::class,
+            OffenseCategorySeeder::class,
         ]);
     }
 }

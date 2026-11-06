@@ -106,9 +106,10 @@ Table languages {
 }
 
 Table offense_categories {
-  id         BIGSERIAL    [pk]
-  name       VARCHAR(255) [not null]
-  created_at TIMESTAMPTZ  [not null, default: `NOW()`]
+  id          BIGSERIAL    [pk]
+  name        VARCHAR(255) [not null]
+  description TEXT
+  created_at  TIMESTAMPTZ  [not null, default: `NOW()`]
 
   indexes {
     `lower(name)` [unique, name: 'offense_categories_name_ci']
