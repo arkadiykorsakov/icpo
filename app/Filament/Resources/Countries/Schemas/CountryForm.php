@@ -16,6 +16,7 @@ class CountryForm
                     ->columnSpanFull()
                     ->label('Название')
                     ->required()
+                    ->maxLength(255)
                     ->unique()
                     ->trim()
                     ->rules([new TrimmedNotEmpty()])
