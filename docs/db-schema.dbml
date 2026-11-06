@@ -84,8 +84,8 @@ Table countries {
 
 Table languages {
   id         BIGSERIAL    [pk]
-  name       VARCHAR(255) [not null]
-  code       VARCHAR(35)  [not null]
+  name       VARCHAR(255) [not null, unique]
+  code       VARCHAR(35)  [not null, unique]
   created_at TIMESTAMPTZ  [not null, default: `NOW()`]
 
   indexes {
@@ -97,6 +97,12 @@ Table languages {
     `length(trim(name)) > 0` [name: 'languages_name_not_empty']
     `length(trim(code)) > 0` [name: 'languages_code_not_empty']
   }
+
+  Note: '''
+  code:
+    Уникальный код языка по стандарту BCP 47.
+    Примеры: en, ru, en-US, pt-BR.
+  '''
 }
 
 Table offense_categories {
