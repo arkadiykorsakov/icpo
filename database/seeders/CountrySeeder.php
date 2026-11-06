@@ -25,7 +25,7 @@ class CountrySeeder extends Seeder
         ])->all();
 
         foreach (array_chunk($data, 100) as $chunk) {
-            DB::table('countries')->insert($chunk);
+            DB::table('countries')->insertOrIgnore($chunk);
         }
     }
 }

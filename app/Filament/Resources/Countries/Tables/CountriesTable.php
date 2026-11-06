@@ -2,9 +2,8 @@
 
 namespace App\Filament\Resources\Countries\Tables;
 
-use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -26,12 +25,17 @@ class CountriesTable
             ])
             ->recordActions([
                 DeleteAction::make()
-                    ->modalHeading(fn ($record) => "Удалить запись: {$record->name}?"),
+                    ->modalHeading(fn ($record) => "Удалить запись: {$record->name}?")
+                    ->disabled(fn ($record) => $record->cities()->exists())
+                    ->tooltip(fn ($record) =>
+                        $record->cities()->exists()
+                            ? 'Сначала удалите все города'
+                            : null
+                    ),
+                ViewAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                //
             ]);
     }
 }

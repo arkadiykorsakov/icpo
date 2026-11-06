@@ -4,6 +4,8 @@ namespace App\Filament\Resources\Countries;
 
 use App\Filament\Resources\Countries\Pages\CreateCountry;
 use App\Filament\Resources\Countries\Pages\ListCountries;
+use App\Filament\Resources\Countries\Pages\ViewCountry;
+use App\Filament\Resources\Countries\RelationManagers\CitiesRelationManager;
 use App\Filament\Resources\Countries\Schemas\CountryForm;
 use App\Filament\Resources\Countries\Tables\CountriesTable;
 use App\Models\Country;
@@ -38,7 +40,7 @@ class CountryResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            'cities' => CitiesRelationManager::class,
         ];
     }
 
@@ -47,6 +49,7 @@ class CountryResource extends Resource
         return [
             'index' => ListCountries::route('/'),
             'create' => CreateCountry::route('/create'),
+            'view' => ViewCountry::route('/{record}'),
         ];
     }
 }

@@ -26,4 +26,9 @@ class Country extends Model
      * @var array<int, string>
      */
     protected $fillable = ['name', 'iso2', 'iso3'];
+
+    public function cities(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(City::class);
+    }
 }
