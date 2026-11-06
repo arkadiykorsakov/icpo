@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Countries\RelationManagers;
 
-use App\Models\City;
 use App\Rules\TrimmedNotEmpty;
 use App\Rules\UniqueCity;
 use Filament\Actions\CreateAction;
@@ -14,7 +13,6 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\QueryException;
-use Illuminate\Validation\ValidationException;
 
 class CitiesRelationManager extends RelationManager
 {
@@ -43,6 +41,9 @@ class CitiesRelationManager extends RelationManager
                         new UniqueCity($this->getOwnerRecord()->getKey()),
                         new TrimmedNotEmpty()
                     ])
+                    ->extraInputAttributes([
+                        'onInput' => "this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);",
+                    ]),
             ]);
     }
 
