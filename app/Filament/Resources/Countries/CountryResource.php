@@ -19,11 +19,9 @@ class CountryResource extends Resource
 {
     protected static ?string $model = Country::class;
 
-    protected static ?string $breadcrumb = 'Страны';
+    protected static ?string $pluralModelLabel = 'Страны';
 
-    protected static string|null|\UnitEnum $navigationGroup = 'Словари';
-
-    protected static ?string $navigationLabel = 'Страны';
+    protected static string|null|\UnitEnum $navigationGroup = 'Справочники';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedFlag;
 

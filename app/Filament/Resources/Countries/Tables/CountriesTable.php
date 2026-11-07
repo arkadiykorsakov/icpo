@@ -16,7 +16,7 @@ class CountriesTable
         return $table
             ->columns([
                 TextColumn::make('name')->label('Название')->searchable()->sortable(),
-                TextColumn::make('iso2')->label('ISO2'),
+                TextColumn::make('iso2')->label('ISO2')->searchable(),
                 TextColumn::make('iso3')->label('ISO3'),
             ])
             ->filters([

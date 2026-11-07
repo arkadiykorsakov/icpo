@@ -67,7 +67,7 @@ Table countries {
   created_at TIMESTAMPTZ  [not null, default: `NOW()`]
 
   indexes {
-    `lower(name)` [unique]
+    `lower(name)` [unique, name: 'countries_name_lower_ux']
   }
 }
 
