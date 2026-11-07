@@ -1,4 +1,3 @@
-
 // ============================================================
 // ENUMS
 // ============================================================
@@ -24,40 +23,38 @@ Enum language_level {
 // ============================================================
 // АУТЕНТИФИКАЦИЯ
 // ============================================================
-Table users {
-  id bigint [pk, increment]
-  name varchar(255) [not null]
-  email varchar(255) [not null]
-  email_verified_at timestamp [null]
-  password varchar(255) [not null]
-  remember_token varchar(100) [null]
-  created_at timestamp [null]
-  updated_at timestamp [null]
 
-  indexes {
-    email [unique]
-  }
+Table users {
+  id                BIGSERIAL    [pk]
+  name              VARCHAR(255) [not null]
+  email             VARCHAR(255) [not null, unique]
+  email_verified_at TIMESTAMPTZ
+  password          VARCHAR(255) [not null]
+  remember_token    VARCHAR(100)
+  created_at        TIMESTAMPTZ  [not null, default: `NOW()`]
+  updated_at        TIMESTAMPTZ  [not null, default: `NOW()`]
 }
 
 Table password_reset_tokens {
-  email varchar(255) [pk]
-  token varchar(255) [not null]
-  created_at timestamp [null]
+  email      VARCHAR(255) [pk]
+  token      VARCHAR(255) [not null]
+  created_at TIMESTAMPTZ
 }
 
 Table sessions {
-  id varchar(255) [pk]
-  user_id bigint [null]
-  ip_address varchar(45) [null]
-  user_agent text [null]
-  payload longtext [not null]
-  last_activity int [not null]
+  id            VARCHAR(255) [pk]
+  user_id       BIGINT
+  ip_address    VARCHAR(45)
+  user_agent    TEXT
+  payload       TEXT [not null]
+  last_activity INTEGER [not null]
 
   indexes {
     user_id
     last_activity
   }
 }
+
 // ============================================================
 // СПРАВОЧНИКИ
 // ============================================================
@@ -65,86 +62,12 @@ Table sessions {
 Table countries {
   id         BIGSERIAL    [pk]
   name       VARCHAR(255) [not null]
-  iso2       CHAR(2)      [not null]
-  iso3       CHAR(3)      [not null]
+  iso2       VARCHAR(2)   [not null, unique]
+  iso3       VARCHAR(3)   [not null, unique]
   created_at TIMESTAMPTZ  [not null, default: `NOW()`]
 
   indexes {
-    `lower(name)` [unique, name: 'countries_name_ci']
-    iso2 [unique, name: 'countries_iso2_uidx']
-    iso3 [unique, name: 'countries_iso3_uidx']
-  }
-
-  checks {
-    `length(trim(name)) > 0` [name: 'countries_name_not_empty']
-    `iso2 = upper(iso2)` [name: 'countries_iso2_uppercase']
-    `iso3 = upper(iso3)` [name: 'countries_iso3_uppercase']
-  }
-}
-
-Table languages {
-  id         BIGSERIAL    [pk]
-  name       VARCHAR(255) [not null, unique]
-  code       VARCHAR(35)  [not null, unique]
-  created_at TIMESTAMPTZ  [not null, default: `NOW()`]
-
-  indexes {
-    `lower(name)` [unique, name: 'languages_name_ci']
-    code [unique, name: 'languages_code_uidx']
-  }
-
-  checks {
-    `length(trim(name)) > 0` [name: 'languages_name_not_empty']
-    `length(trim(code)) > 0` [name: 'languages_code_not_empty']
-  }
-
-  Note: '''
-  code:
-    Уникальный код языка по стандарту BCP 47.
-    Примеры: en, ru, en-US, pt-BR.
-  '''
-}
-
-Table offense_categories {
-  id          BIGSERIAL    [pk]
-  name        VARCHAR(255) [not null]
-  description TEXT
-  created_at  TIMESTAMPTZ  [not null, default: `NOW()`]
-
-  indexes {
-    `lower(name)` [unique, name: 'offense_categories_name_ci']
-  }
-
-  checks {
-    `length(trim(name)) > 0` [name: 'offense_categories_name_not_empty']
-  }
-}
-
-Table hair_colors {
-  id         BIGSERIAL    [pk]
-  name       VARCHAR(255) [not null]
-  created_at TIMESTAMPTZ  [not null, default: `NOW()`]
-
-  indexes {
-    `lower(name)` [unique, name: 'hair_colors_name_ci']
-  }
-
-  checks {
-    `length(trim(name)) > 0` [name: 'hair_colors_name_not_empty']
-  }
-}
-
-Table eye_colors {
-  id         BIGSERIAL    [pk]
-  name       VARCHAR(255) [not null]
-  created_at TIMESTAMPTZ  [not null, default: `NOW()`]
-
-  indexes {
-    `lower(name)` [unique, name: 'eye_colors_name_ci']
-  }
-
-  checks {
-    `length(trim(name)) > 0` [name: 'eye_colors_name_not_empty']
+    `lower(name)` [unique]
   }
 }
 
@@ -155,12 +78,57 @@ Table cities {
   created_at TIMESTAMPTZ  [not null, default: `NOW()`]
 
   indexes {
-    (`lower(name)`, country_id) [unique, name: 'cities_name_ci']
-    country_id [name: 'cities_country_id_idx']
+    (country_id, `lower(name)`) [unique]
+  }
+}
+
+Table languages {
+  id         BIGSERIAL    [pk]
+  name       VARCHAR(255) [not null]
+  code       VARCHAR(35)  [not null]
+  created_at TIMESTAMPTZ  [not null, default: `NOW()`]
+
+  indexes {
+    `lower(name)` [unique]
+    `lower(code)` [unique]
   }
 
-  checks {
-    `length(trim(name)) > 0` [name: 'cities_name_not_empty']
+  Note: '''
+  code:
+    Уникальный код языка по стандарту BCP 47.
+    Примеры: en, ru, en-US, pt-BR.
+    Хранение в каноническом регистре BCP 47.
+  '''
+}
+
+Table offense_categories {
+  id          BIGSERIAL    [pk]
+  name        VARCHAR(255) [not null]
+  description TEXT
+  created_at  TIMESTAMPTZ  [not null, default: `NOW()`]
+
+  indexes {
+    `lower(name)` [unique]
+  }
+}
+
+Table hair_colors {
+  id         BIGSERIAL    [pk]
+  name       VARCHAR(255) [not null]
+  created_at TIMESTAMPTZ  [not null, default: `NOW()`]
+
+  indexes {
+    `lower(name)` [unique]
+  }
+}
+
+Table eye_colors {
+  id         BIGSERIAL    [pk]
+  name       VARCHAR(255) [not null]
+  created_at TIMESTAMPTZ  [not null, default: `NOW()`]
+
+  indexes {
+    `lower(name)` [unique]
   }
 }
 
@@ -178,11 +146,11 @@ Table criminals {
   weight_kg           NUMERIC(5,1)
 
   has_head_hair       BOOLEAN      [not null, default: true]
-  hair_color_id       BIGINT       [ref: > hair_colors.id]
-  eye_color_id        BIGINT       [ref: > eye_colors.id]
+  hair_color_id       BIGINT       [ref: >? hair_colors.id]
+  eye_color_id        BIGINT       [ref: >? eye_colors.id]
 
   birth_date          DATE
-  birth_city_id       BIGINT       [ref: > cities.id]
+  birth_city_id       BIGINT       [ref: >? cities.id]
 
   notes               TEXT
 
@@ -190,8 +158,9 @@ Table criminals {
   updated_at          TIMESTAMPTZ  [not null, default: `NOW()`]
 
   indexes {
-    (`lower(last_name)`, `lower(first_name)`) [name: 'criminals_full_name_ci']
-    `lower(nickname)` [name: 'criminals_nickname_ci']
+    `lower(last_name)`
+    `lower(first_name)`
+    `lower(nickname)`
 
     hair_color_id
     eye_color_id
@@ -200,16 +169,12 @@ Table criminals {
   }
 
   checks {
-    `length(trim(last_name)) > 0` [name: 'criminals_last_name_not_empty']
-    `length(trim(first_name)) > 0` [name: 'criminals_first_name_not_empty']
-    `nickname IS NULL OR length(trim(nickname)) > 0` [name: 'criminals_nickname_not_empty']
+    `birth_date IS NULL OR birth_date <= CURRENT_DATE`
 
-    `birth_date IS NULL OR birth_date <= CURRENT_DATE` [name: 'criminals_birth_date_valid']
+    `height_cm IS NULL OR height_cm BETWEEN 30 AND 280`
+    `weight_kg IS NULL OR weight_kg BETWEEN 0.5 AND 500`
 
-    `height_cm IS NULL OR height_cm BETWEEN 30 AND 280` [name: 'criminals_height_valid']
-    `weight_kg IS NULL OR weight_kg BETWEEN 0.5 AND 500` [name: 'criminals_weight_valid']
-
-    `has_head_hair OR hair_color_id IS NULL` [name: 'criminals_hair_color_valid']
+    `has_head_hair OR hair_color_id IS NULL`
   }
 
   Note: '''
@@ -227,13 +192,13 @@ Table criminals {
   FK hair_color_id: ON DELETE RESTRICT.
   FK eye_color_id: ON DELETE RESTRICT.
   FK birth_city_id: ON DELETE RESTRICT.
-  FK last_seen_city_id: ON DELETE RESTRICT.
   '''
 }
 
 // ============================================================
 // СВЯЗИ M:N
 // ============================================================
+
 Table criminal_sightings {
   id           BIGSERIAL    [pk]
   criminal_id  BIGINT       [not null, ref: > criminals.id]
@@ -242,36 +207,21 @@ Table criminal_sightings {
   created_at   TIMESTAMPTZ  [not null, default: `NOW()`]
 
   indexes {
-    criminal_id
     city_id
-    (criminal_id, created_at) [name: 'criminal_sightings_criminal_created_idx']
+    criminal_id
+    (criminal_id, created_at)
   }
-
-  Note: '''
-  Таблица хранит историю городов, в которых был обнаружен человек.
-
-  Одна запись соответствует одному факту обнаружения.
-
-  description:
-    Дополнительное описание обстоятельств обнаружения.
-
-  created_at:
-    Дата и время добавления записи в систему.
-
-  FK criminal_id: ON DELETE CASCADE.
-  FK city_id: ON DELETE RESTRICT.
-  '''
 }
 
 Table spoken_languages {
-  criminal_id BIGINT        [not null, ref: > criminals.id]
-  language_id  BIGINT        [not null, ref: > languages.id]
+  criminal_id  BIGINT         [not null, ref: > criminals.id]
+  language_id  BIGINT         [not null, ref: > languages.id]
   level        language_level
-  created_at   TIMESTAMPTZ   [not null, default: `NOW()`]
+  created_at   TIMESTAMPTZ    [not null, default: `NOW()`]
 
   indexes {
     (criminal_id, language_id) [pk]
-    language_id [name: 'spoken_languages_language_id_idx']
+    language_id
   }
 
   Note: '''
@@ -293,7 +243,7 @@ Table citizenships {
 
   indexes {
     (criminal_id, country_id) [pk]
-    country_id [name: 'citizenships_country_id_idx']
+    country_id
   }
 
   Note: '''
@@ -312,7 +262,7 @@ Table criminal_offenses {
 
   indexes {
     (criminal_id, offense_category_id) [pk]
-    offense_category_id [name: 'criminal_offenses_category_id_idx']
+    offense_category_id
   }
 
   Note: '''
@@ -339,13 +289,12 @@ Table criminal_status_history {
   updated_at   TIMESTAMPTZ     [not null, default: `NOW()`]
 
   indexes {
-    criminal_id
-    (criminal_id, effective_at) [unique, name: 'criminal_status_history_criminal_effective_uq']
+    (criminal_id, effective_at)
+    status
   }
 
   checks {
-    `effective_at <= created_at` [name: 'criminal_status_history_effective_at_valid']
-    `description IS NULL OR length(trim(description)) > 0` [name: 'criminal_status_history_description_not_empty']
+    `effective_at <= created_at`
   }
 
   Note: '''
@@ -353,19 +302,12 @@ Table criminal_status_history {
 
   effective_at:
     Фактическая дата и время изменения статуса.
-    Должна быть позже effective_at предыдущего статуса.
+    Должна быть позже effective_at предыдущего статуса этого человека.
     Не может быть в будущем.
 
   description:
     Причина изменения статуса или дополнительные сведения.
     Может быть NULL.
-
-  created_at:
-    Дата и время создания записи в системе.
-    Не изменяется при редактировании.
-
-  updated_at:
-    Дата и время последнего редактирования записи.
 
   Валидация хронологии:
     При добавлении нового статуса effective_at должен быть
