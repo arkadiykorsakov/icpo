@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Countries\RelationManagers;
 
+use App\Constants\CityConstraints;
 use App\Rules\TrimmedNotEmpty;
 use App\Rules\UniqueCity;
 use Filament\Actions\CreateAction;
@@ -34,12 +35,13 @@ class CitiesRelationManager extends RelationManager
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->columnSpanFull()
                     ->label('Название')
+                    ->trim()
                     ->required()
                     ->maxLength(255)
                     ->rules(fn () => [
                         new UniqueCity($this->getOwnerRecord()->getKey()),
-                        new TrimmedNotEmpty()
                     ])
                     ->extraInputAttributes([
                         'onInput' => "this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);",
@@ -68,7 +70,7 @@ class CitiesRelationManager extends RelationManager
                                 $exception->getCode() === '23505'
                                 && str_contains(
                                     $exception->getMessage(),
-                                    'cities_name_ci'
+                                   CityConstraints::LOWER_NAME_COUNTRY_ID_UNIQUE
                                 )
                             ) {
                                 Notification::make()

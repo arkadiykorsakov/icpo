@@ -17,14 +17,12 @@ return new class extends Migration
             $table->foreignId('country_id')
                 ->constrained()
                 ->restrictOnDelete();
-            $table->timestamp('created_at')->useCurrent();
-
-            $table->index('country_id', 'cities_country_id_idx');
+            $table->timestampTz('created_at')->useCurrent();
         });
 
         DB::statement('
-            CREATE UNIQUE INDEX cities_name_ci
-            ON cities (LOWER(name), country_id)
+            CREATE UNIQUE INDEX cities_lower_name_country_id_ux
+            ON cities (country_id, LOWER(name));
         ');
     }
 

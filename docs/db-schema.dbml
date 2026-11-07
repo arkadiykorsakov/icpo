@@ -67,7 +67,7 @@ Table countries {
   created_at TIMESTAMPTZ  [not null, default: `NOW()`]
 
   indexes {
-    `lower(name)` [unique, name: 'countries_name_lower_ux']
+    `lower(name)` [unique, name: 'countries_lower_name_ux']
   }
 }
 
@@ -78,8 +78,12 @@ Table cities {
   created_at TIMESTAMPTZ  [not null, default: `NOW()`]
 
   indexes {
-    (country_id, `lower(name)`) [unique]
+    (country_id, `lower(name)`) [unique, name: 'cities_lower_name_country_id_ux']
   }
+
+  Note: '''
+  FK country_id: ON DELETE RESTRICT.
+  '''
 }
 
 Table languages {
