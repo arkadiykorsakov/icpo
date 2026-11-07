@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Countries\RelationManagers;
 
 use App\Constants\CityConstraints;
-use App\Rules\TrimmedNotEmpty;
 use App\Rules\UniqueCity;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;

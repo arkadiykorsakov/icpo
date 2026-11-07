@@ -17,6 +17,11 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamp('created_at')->useCurrent();
         });
+
+        DB::statement('
+            CREATE UNIQUE INDEX offense_categories_lower_name_ux
+            ON offense_categories (LOWER(name))
+        ');
     }
 
     /**

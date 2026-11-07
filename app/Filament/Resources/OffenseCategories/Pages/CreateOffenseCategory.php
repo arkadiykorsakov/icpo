@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\OffenseCategories\Pages;
 
+use App\Constants\OffenseCategoryConstraints;
 use App\Filament\Resources\OffenseCategories\OffenseCategoryResource;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -22,7 +23,7 @@ class CreateOffenseCategory extends CreateRecord
             $message = $exception->getMessage();
 
             $body = match (true) {
-                str_contains($message, 'offense_categories_name_unique') => 'Категория с таким названием уже существует.',
+                str_contains($message, OffenseCategoryConstraints::LOWER_NAME_UNIQUE) => 'Категория с таким названием уже существует.',
                 default => null,
             };
 

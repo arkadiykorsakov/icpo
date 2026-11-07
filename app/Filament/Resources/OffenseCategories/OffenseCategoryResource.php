@@ -19,7 +19,7 @@ class OffenseCategoryResource extends Resource
 
     protected static ?string $breadcrumb = 'Категории преступлений';
 
-    protected static string|null|\UnitEnum $navigationGroup = 'Словари';
+    protected static string|null|\UnitEnum $navigationGroup = 'Справочники';
 
     protected static ?string $navigationLabel = 'Категории преступлений';
 
