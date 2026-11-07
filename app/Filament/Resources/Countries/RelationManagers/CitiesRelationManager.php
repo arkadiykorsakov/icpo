@@ -4,10 +4,10 @@ namespace App\Filament\Resources\Countries\RelationManagers;
 
 use App\Constants\CityConstraints;
 use App\Rules\UniqueCity;
+use App\Support\Database\UniqueConstraintHandler;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -61,27 +61,22 @@ class CitiesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()
                     ->label('Добавить город')
-                    ->using(function (array $data, CreateAction $action): \Illuminate\Database\Eloquent\Model {
+                    ->using(function (array $data, CreateAction $action) {
                         try {
                             return $this->getRelationship()->create($data);
                         } catch (QueryException $exception) {
-                            if (
-                                $exception->getCode() === '23505'
-                                && str_contains(
-                                    $exception->getMessage(),
-                                   CityConstraints::LOWER_NAME_COUNTRY_ID_UNIQUE
-                                )
-                            ) {
-                                Notification::make()
-                                    ->danger()
-                                    ->title('Город уже существует')
-                                    ->body('Такой город уже добавлен в эту страну.')
-                                    ->send();
+                            $handled = UniqueConstraintHandler::handle($exception, [
+                                CityConstraints::LOWER_NAME_COUNTRY_ID_UNIQUE => [
+                                    'title' => 'Город уже существует',
+                                    'body' => 'Такой город уже добавлен в эту страну.',
+                                ],
+                            ]);
 
-                                $action->halt();
+                            if (! $handled) {
+                                throw $exception;
                             }
 
-                            throw $exception;
+                            $action->halt();
                         }
                     })
                     ->after(
