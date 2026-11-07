@@ -10,8 +10,6 @@ class ListLanguages extends ListRecords
 {
     protected static string $resource = LanguageResource::class;
 
-    protected static ?string $title = 'Языки';
-
     protected function getHeaderActions(): array
     {
         return [

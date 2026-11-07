@@ -93,8 +93,8 @@ Table languages {
   created_at TIMESTAMPTZ  [not null, default: `NOW()`]
 
   indexes {
-    `lower(name)` [unique]
-    `lower(code)` [unique]
+    `lower(name)` [unique, name: 'languages_lower_name_ux']
+    `lower(code)` [unique, name: 'languages_lower_code_ux']
   }
 
   Note: '''

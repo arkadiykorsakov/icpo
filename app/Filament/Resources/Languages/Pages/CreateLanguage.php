@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Languages\Pages;
 
+use App\Constants\LanguageConstraints;
 use App\Filament\Resources\Languages\LanguageResource;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -22,8 +23,8 @@ class CreateLanguage extends CreateRecord
             $message = $exception->getMessage();
 
             $body = match (true) {
-                str_contains($message, 'languages_name_unique') => 'Язык с таким названием уже существует.',
-                str_contains($message, 'languages_code_unique') => 'Язык с таким кодом уже существует.',
+                str_contains($message, LanguageConstraints::LOWER_NAME_UNIQUE) => 'Язык с таким названием уже существует.',
+                str_contains($message, LanguageConstraints::LOWER_CODE_UNIQUE) => 'Язык с таким кодом уже существует.',
                 default => null,
             };
 

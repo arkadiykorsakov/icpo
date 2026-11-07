@@ -16,7 +16,7 @@ class LanguagesTable
         return $table
             ->columns([
                 TextColumn::make('name')->label('Название')->searchable()->sortable(),
-                TextColumn::make('code')->label('Код языка по BCP 47'),
+                TextColumn::make('code')->label('Код языка по BCP 47')->searchable(),
             ])
             ->filters([
                 //

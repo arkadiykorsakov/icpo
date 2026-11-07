@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Languages\Schemas;
 
-use App\Rules\TrimmedNotEmpty;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 
@@ -15,25 +14,25 @@ class LanguageForm
                 TextInput::make('name')
                     ->columnSpanFull()
                     ->label('Название')
+                    ->trim()
                     ->required()
                     ->maxLength(255)
                     ->unique()
-                    ->trim()
-                    ->rules([new TrimmedNotEmpty()])
                     ->extraInputAttributes([
-                        'onInput' => "this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);",
+                        'onInput' => "
+                            this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1);
+                        ",
                     ]),
+
                 TextInput::make('code')
                     ->columnSpanFull()
                     ->label('Код языка по BCP 47')
-                    ->required()
                     ->helperText('en, ru, en-US, pt-BR')
-                    ->unique()
                     ->trim()
-                    ->minLength(1)
+                    ->required()
                     ->maxLength(35)
                     ->regex('/^[a-zA-Z]{2,8}(-[a-zA-Z0-9]{1,8})*$/')
-                    ->rules([new TrimmedNotEmpty()])
+                    ->unique(),
             ]);
     }
 }
