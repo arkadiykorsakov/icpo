@@ -13,6 +13,8 @@ class CreateCountry extends CreateRecord
 {
     protected static string $resource = CountryResource::class;
 
+    protected static ?string $title = 'Создать страну';
+
     protected function handleRecordCreation(array $data): Model
     {
         try {

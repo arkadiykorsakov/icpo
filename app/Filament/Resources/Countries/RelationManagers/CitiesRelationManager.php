@@ -61,6 +61,7 @@ class CitiesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()
                     ->label('Добавить город')
+                    ->modalHeading('Добавить город')
                     ->using(function (array $data, CreateAction $action) {
                         try {
                             return $this->getRelationship()->create($data);

@@ -13,6 +13,8 @@ class CreateHairColor extends CreateRecord
 {
     protected static string $resource = HairColorResource::class;
 
+    protected static ?string $title = 'Создать цвет волос';
+
     protected function handleRecordCreation(array $data): Model
     {
         try {

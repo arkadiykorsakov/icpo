@@ -13,6 +13,8 @@ class CreateOffenseCategory extends CreateRecord
 {
     protected static string $resource = OffenseCategoryResource::class;
 
+    protected static ?string $title = 'Создать категорию преступлений';
+
     protected function handleRecordCreation(array $data): Model
     {
         try {

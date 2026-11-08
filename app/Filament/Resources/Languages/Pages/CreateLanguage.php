@@ -13,6 +13,8 @@ class CreateLanguage extends CreateRecord
 {
     protected static string $resource = LanguageResource::class;
 
+    protected static ?string $title = 'Создать язык';
+
     protected function handleRecordCreation(array $data): Model
     {
         try {
