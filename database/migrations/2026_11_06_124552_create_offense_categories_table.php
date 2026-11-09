@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->text('description')->nullable();
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestampTz('created_at')->useCurrent();
         });
 
         DB::statement('
