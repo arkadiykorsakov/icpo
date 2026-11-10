@@ -44,8 +44,7 @@ return new class extends Migration
 
             $table->text('notes')->nullable();
 
-            $table->timestampTz('created_at')->useCurrent();
-            $table->timestampTz('updated_at')->useCurrent();
+            $table->timestampsTz();
 
             $table->index('hair_color_id', 'criminals_hair_color_id_idx');
             $table->index('eye_color_id', 'criminals_eye_color_id_idx');
@@ -89,21 +88,6 @@ return new class extends Migration
             ALTER TABLE criminals
             ADD CONSTRAINT criminals_head_hair_check
             CHECK (has_head_hair OR hair_color_id IS NULL)
-        ");
-
-        DB::statement("
-            CREATE OR REPLACE FUNCTION set_updated_at() RETURNS trigger AS $$
-            BEGIN
-                NEW.updated_at = CURRENT_TIMESTAMP;
-                RETURN NEW;
-            END;
-            $$ LANGUAGE plpgsql
-        ");
-
-        DB::statement("
-            CREATE TRIGGER criminals_set_updated_at
-            BEFORE UPDATE ON criminals
-            FOR EACH ROW EXECUTE FUNCTION set_updated_at()
         ");
     }
 
