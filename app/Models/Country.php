@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Country extends Model
 {
@@ -23,5 +24,18 @@ class Country extends Model
     public function cities(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(City::class);
+    }
+
+    // преступники, родившиеся в городах этой страны — напрямую
+    public function birthCriminals(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Criminal::class,
+            City::class,
+            'country_id',
+            'birth_city_id',
+            'id',
+            'id',
+        );
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class City extends Model
 {
@@ -23,5 +24,16 @@ class City extends Model
     public function country(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Country::class);
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return "{$this->name}, {$this->country->name}";
+    }
+
+    // преступники, родившиеся в этом городе
+    public function birthCriminals(): HasMany
+    {
+        return $this->hasMany(Criminal::class, 'birth_city_id');
     }
 }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c8c5213df616ed277d94ddf0e9674a87",
+    "content-hash": "2fb7b5ae241a86079a8a3b24b8e3252b",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1153,6 +1153,79 @@
             ],
             "time": "2025-03-06T22:45:56+00:00",
             "published-time": "2025-03-20T21:39:03+00:00"
+        },
+        {
+            "name": "eslam-reda-div/filament-timezone-detector",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/eslam-reda-div/filament-timezone-detector.git",
+                "reference": "d7deeed5812c92fee5f9b261cb02c25cf5bcee5c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/eslam-reda-div/filament-timezone-detector/zipball/d7deeed5812c92fee5f9b261cb02c25cf5bcee5c",
+                "reference": "d7deeed5812c92fee5f9b261cb02c25cf5bcee5c",
+                "shasum": ""
+            },
+            "require": {
+                "filament/filament": "^5.0",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.16"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^10.0",
+                "pestphp/pest": "^3.0",
+                "pestphp/pest-plugin-laravel": "^3.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "TimezoneDetector": "EslamRedaDiv\\TimezoneDetector\\Facades\\TimezoneDetector"
+                    },
+                    "providers": [
+                        "EslamRedaDiv\\TimezoneDetector\\TimezoneDetectorServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/Helpers/helpers.php"
+                ],
+                "psr-4": {
+                    "EslamRedaDiv\\TimezoneDetector\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eslam Reda",
+                    "email": "eslamreda542@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A Filament v5 plugin that automatically detects user timezone from the browser and provides comprehensive helpers, facades, macros, and middleware for seamless timezone conversion across your entire application.",
+            "homepage": "https://github.com/eslam-reda-div/filament-timezone-detector",
+            "keywords": [
+                "browser-timezone",
+                "detector",
+                "filament",
+                "filament-plugin",
+                "laravel",
+                "timezone",
+                "timezone-converter",
+                "user-timezone"
+            ],
+            "support": {
+                "issues": "https://github.com/eslam-reda-div/filament-timezone-detector/issues",
+                "source": "https://github.com/eslam-reda-div/filament-timezone-detector/tree/v1.1.0"
+            },
+            "time": "2026-03-05T17:30:18+00:00",
+            "published-time": "2026-03-05T17:30:32+00:00"
         },
         {
             "name": "filament/actions",

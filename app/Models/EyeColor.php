@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EyeColor extends Model
 {
@@ -19,4 +20,10 @@ class EyeColor extends Model
      * @var array<int, string>
      */
     protected $fillable = ['name'];
+
+    // преступники, с таким цветом глаз
+    public function criminals(): HasMany
+    {
+        return $this->hasMany(Criminal::class, 'eye_color_id');
+    }
 }

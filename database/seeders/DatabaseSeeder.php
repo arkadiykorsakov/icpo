@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             OffenseCategorySeeder::class,
             HairColorSeeder::class,
             EyeColorSeeder::class,
+            CriminalSeeder::class,
         ]);
     }
 }
