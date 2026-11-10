@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             EyeColorSeeder::class,
             CriminalSeeder::class,
             CriminalSightingSeeder::class,
+            SpokenLanguageSeeder::class,
         ]);
     }
 }

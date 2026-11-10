@@ -18,6 +18,7 @@ Enum language_level {
   B2
   C1
   C2
+  Native
 }
 
 Enum gender {
@@ -235,13 +236,15 @@ Table criminal_sightings {
 }
 
 Table spoken_languages {
+  id           BIGSERIAL      [pk]
   criminal_id  BIGINT         [not null, ref: > criminals.id]
   language_id  BIGINT         [not null, ref: > languages.id]
   level        language_level
   created_at   TIMESTAMPTZ    [not null, default: `NOW()`]
+  updated_at   TIMESTAMPTZ    [not null, default: `NOW()`]
 
   indexes {
-    (criminal_id, language_id) [pk]
+    (criminal_id, language_id) [unique]
     language_id
   }
 

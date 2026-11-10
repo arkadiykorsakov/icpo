@@ -6,6 +6,8 @@ use App\Filament\Resources\Criminals\Pages\CreateCriminal;
 use App\Filament\Resources\Criminals\Pages\EditCriminal;
 use App\Filament\Resources\Criminals\Pages\ListCriminals;
 use App\Filament\Resources\Criminals\Pages\ViewCriminal;
+use App\Filament\Resources\Criminals\RelationManagers\SightingsRelationManager;
+use App\Filament\Resources\Criminals\RelationManagers\SpokenLanguagesRelationManager;
 use App\Filament\Resources\Criminals\Schemas\CriminalForm;
 use App\Filament\Resources\Criminals\Tables\CriminalsTable;
 use App\Models\Criminal;
@@ -36,7 +38,8 @@ class CriminalResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\SightingsRelationManager::class,
+            SightingsRelationManager::class,
+            SpokenLanguagesRelationManager::class,
         ];
     }
 
