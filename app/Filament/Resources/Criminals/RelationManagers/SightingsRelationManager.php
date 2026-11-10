@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Criminals\RelationManagers;
 
 use App\Models\City;
 use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -69,10 +70,6 @@ class SightingsRelationManager extends RelationManager
         return $table
             ->defaultSort('effective_date', 'desc')
             ->columns([
-                TextColumn::make('description')
-                    ->label('Комментарий')
-                    ->wrap(),
-
                 TextColumn::make('city.full_name')
                     ->label('Город'),
 
@@ -84,6 +81,10 @@ class SightingsRelationManager extends RelationManager
                     ->label('Время')
                     ->time('H:i')
                     ->placeholder('Неизвестно'),
+
+                TextColumn::make('description')
+                    ->label('Комментарий')
+                    ->wrap(),
             ])
             ->headerActions([
                 CreateAction::make()
@@ -92,6 +93,8 @@ class SightingsRelationManager extends RelationManager
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make()
+                    ->modalHeading(fn ($record) => "Удалить запись: {$record->city->full_name}, {$record->effective_date}?"),
             ]);
     }
 }
