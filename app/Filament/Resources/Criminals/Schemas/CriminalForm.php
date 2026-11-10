@@ -84,7 +84,8 @@ class CriminalForm
                     ->getOptionLabelFromRecordUsing(
                         fn (City $record) => $record->full_name
                     )
-                    ->searchable(),
+                    ->searchable()
+                    ->preload(true),
                 Textarea::make('notes')
                     ->columnSpanFull()
                     ->label('Особые приметы')

@@ -10,11 +10,14 @@ class EditCriminal extends EditRecord
 {
     protected static string $resource = CriminalResource::class;
 
-    protected static ?string $title = 'Редактировать преступника';
-
     public function getTitle(): string
     {
         return 'Обновить преступника: ' . $this->record->last_name . ' ' . $this->record->first_name . ' ' . ($this->record->middle_name ?? '');
+    }
+
+    public function getRelationManagers(): array
+    {
+        return [];
     }
 
     protected function getHeaderActions(): array

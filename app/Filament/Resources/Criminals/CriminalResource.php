@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Criminals;
 use App\Filament\Resources\Criminals\Pages\CreateCriminal;
 use App\Filament\Resources\Criminals\Pages\EditCriminal;
 use App\Filament\Resources\Criminals\Pages\ListCriminals;
+use App\Filament\Resources\Criminals\Pages\ViewCriminal;
 use App\Filament\Resources\Criminals\Schemas\CriminalForm;
 use App\Filament\Resources\Criminals\Tables\CriminalsTable;
 use App\Models\Criminal;
@@ -35,7 +36,7 @@ class CriminalResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\SightingsRelationManager::class,
         ];
     }
 
@@ -44,6 +45,7 @@ class CriminalResource extends Resource
         return [
             'index' => ListCriminals::route('/'),
             'create' => CreateCriminal::route('/create'),
+            'view' => ViewCriminal::route('/{record}'),
             'edit' => EditCriminal::route('/{record}/edit'),
         ];
     }

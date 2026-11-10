@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\Gender;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Criminal extends Model
 {
@@ -62,5 +63,10 @@ class Criminal extends Model
     public function birthCity(): BelongsTo
     {
         return $this->belongsTo(City::class);
+    }
+
+    public function sightings(): HasMany
+    {
+        return $this->hasMany(CriminalSighting::class);
     }
 }

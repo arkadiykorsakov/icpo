@@ -215,16 +215,22 @@ Table criminals {
 // ============================================================
 
 Table criminal_sightings {
-  id           BIGSERIAL    [pk]
-  criminal_id  BIGINT       [not null, ref: > criminals.id]
-  city_id      BIGINT       [not null, ref: > cities.id]
-  description  TEXT
-  created_at   TIMESTAMPTZ  [not null, default: `NOW()`]
+  id                BIGSERIAL    [pk]
+  criminal_id       BIGINT       [not null, ref: > criminals.id]
+  city_id           BIGINT       [not null, ref: > cities.id]
+  description       TEXT
+  effective_date    DATE         [not null]
+  effective_time    TIME
+  created_at        TIMESTAMPTZ  [not null, default: `NOW()`]
+  updated_at        TIMESTAMPTZ  [not null, default: `NOW()`]
 
   indexes {
-    city_id
-    criminal_id
-    (criminal_id, created_at)
+    city_id                         [name: 'criminal_sightings_city_id_idx']
+    (criminal_id, effective_date)   [name: 'criminal_sightings_criminal_id_effective_date_idx']
+  }
+
+  checks {
+    `effective_date <= CURRENT_DATE` [name: 'criminal_sightings_effective_date_check']
   }
 }
 

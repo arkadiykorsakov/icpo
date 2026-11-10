@@ -8,9 +8,8 @@ use App\Models\Country;
 use App\Models\Criminal;
 use App\Models\EyeColor;
 use App\Models\HairColor;
+use Filament\Actions\ViewAction;
 use Filament\Support\Colors\Color;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
@@ -321,11 +320,10 @@ class CriminalsTable
             ->filtersFormColumns(2)
             ->recordActions([
                 EditAction::make(),
+                ViewAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                //
             ]);
     }
 
