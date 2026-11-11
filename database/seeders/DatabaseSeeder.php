@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             CriminalSeeder::class,
             CriminalSightingSeeder::class,
             SpokenLanguageSeeder::class,
+            CitizenshipSeeder::class,
         ]);
     }
 }

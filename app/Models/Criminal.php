@@ -74,4 +74,9 @@ class Criminal extends Model
     {
         return $this->hasMany(SpokenLanguage::class);
     }
+
+    public function citizenships(): HasMany
+    {
+        return $this->hasMany(Citizenship::class);
+    }
 }

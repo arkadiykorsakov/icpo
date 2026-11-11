@@ -6,6 +6,7 @@ use App\Filament\Resources\Criminals\Pages\CreateCriminal;
 use App\Filament\Resources\Criminals\Pages\EditCriminal;
 use App\Filament\Resources\Criminals\Pages\ListCriminals;
 use App\Filament\Resources\Criminals\Pages\ViewCriminal;
+use App\Filament\Resources\Criminals\RelationManagers\CitizenshipsRelationManager;
 use App\Filament\Resources\Criminals\RelationManagers\SightingsRelationManager;
 use App\Filament\Resources\Criminals\RelationManagers\SpokenLanguagesRelationManager;
 use App\Filament\Resources\Criminals\Schemas\CriminalForm;
@@ -40,6 +41,7 @@ class CriminalResource extends Resource
         return [
             SightingsRelationManager::class,
             SpokenLanguagesRelationManager::class,
+            CitizenshipsRelationManager::class,
         ];
     }
 

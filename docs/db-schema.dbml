@@ -244,7 +244,7 @@ Table spoken_languages {
   updated_at   TIMESTAMPTZ    [not null, default: `NOW()`]
 
   indexes {
-    (criminal_id, language_id) [unique]
+    (criminal_id, language_id) [unique, name: 'spoken_languages_criminal_language_ux']
     language_id
   }
 
@@ -261,12 +261,13 @@ Table spoken_languages {
 }
 
 Table citizenships {
+  id          BIGSERIAL    [pk]
   criminal_id BIGINT       [not null, ref: > criminals.id]
   country_id  BIGINT       [not null, ref: > countries.id]
   created_at  TIMESTAMPTZ  [not null, default: `NOW()`]
 
   indexes {
-    (criminal_id, country_id) [pk]
+    (criminal_id, country_id) [unique, name: 'citizenships_criminal_country_ux']
     country_id
   }
 
@@ -275,7 +276,7 @@ Table citizenships {
   Один человек может иметь гражданство нескольких стран.
 
   FK criminal_id: ON DELETE CASCADE.
-  FK country_id: ON DELETE RESTRICT.
+  FK country_id:  ON DELETE RESTRICT.
   '''
 }
 
