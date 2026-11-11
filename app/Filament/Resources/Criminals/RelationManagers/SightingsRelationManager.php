@@ -45,18 +45,21 @@ class SightingsRelationManager extends RelationManager
                     )
                     ->searchable()
                     ->preload()
-                    ->required(),
+                    ->required()
+                    ->disabled(fn (string $operation) => $operation === 'edit'),
 
                 DatePicker::make('effective_date')
                     ->label('Дата')
                     ->displayFormat('d.m.Y')
                     ->required()
-                    ->maxDate(now()),
+                    ->maxDate(now())
+                    ->disabled(fn (string $operation) => $operation === 'edit'),
 
                 TimePicker::make('effective_time')
                     ->label('Время')
                     ->seconds(false)
-                    ->nullable(),
+                    ->nullable()
+                    ->disabled(fn (string $operation) => $operation === 'edit'),
 
                 Textarea::make('description')
                     ->label('Комментарий')
