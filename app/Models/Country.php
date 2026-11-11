@@ -26,7 +26,7 @@ class Country extends Model
         return $this->hasMany(City::class);
     }
 
-    // преступники, родившиеся в городах этой страны — напрямую
+    // преступники, родившиеся в городах этой страны - напрямую
     public function birthCriminals(): HasManyThrough
     {
         return $this->hasManyThrough(

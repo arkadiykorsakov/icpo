@@ -15,12 +15,12 @@ enum LanguageLevel: string
     public function label(): string
     {
         return match ($this) {
-            self::A1 => 'A1 — Beginner',
-            self::A2 => 'A2 — Elementary',
-            self::B1 => 'B1 — Intermediate',
-            self::B2 => 'B2 — Upper Intermediate',
-            self::C1 => 'C1 — Advanced',
-            self::C2 => 'C2 — Proficiency',
+            self::A1 => 'A1 (Beginner)',
+            self::A2 => 'A2 (Elementary)',
+            self::B1 => 'B1 (Intermediate)',
+            self::B2 => 'B2 (Upper Intermediate)',
+            self::C1 => 'C1 (Advanced)',
+            self::C2 => 'C2 (Proficiency)',
             self::NATIVE => 'Родной язык (носитель)',
         };
     }
