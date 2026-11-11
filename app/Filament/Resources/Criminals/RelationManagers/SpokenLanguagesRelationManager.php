@@ -2,17 +2,21 @@
 
 namespace App\Filament\Resources\Criminals\RelationManagers;
 
+use App\Constants\SpokenLanguageConstraints;
 use App\Enums\LanguageLevel;
 use App\Models\Language;
+use App\Models\SpokenLanguage;
+use App\Rules\UniqueSpokenLanguage;
+use App\Support\Database\UniqueConstraintHandler;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\QueryException;
 
 class SpokenLanguagesRelationManager extends RelationManager
 {
@@ -37,7 +41,12 @@ class SpokenLanguagesRelationManager extends RelationManager
                         Language::query()
                             ->pluck('name', 'id')
                             ->all()
-                    ),
+                    )
+                    ->rules(fn () => [
+                        new UniqueSpokenLanguage(
+                            $this->getOwnerRecord()->getKey(),
+                        ),
+                    ]),
                 Select::make('level')
                     ->label('Уровень владения')
                     ->options(LanguageLevel::options())
@@ -68,12 +77,55 @@ class SpokenLanguagesRelationManager extends RelationManager
             ->headerActions([
                 CreateAction::make()
                     ->label('Добавить язык')
-                    ->modalHeading('Добавить язык'),
+                    ->modalHeading('Добавить язык')
+                    ->using(function (array $data, CreateAction $action) {
+                        try {
+                            return $this->getRelationship()->create($data);
+                        } catch (QueryException $exception) {
+                            $handled = UniqueConstraintHandler::handle($exception, [
+                                SpokenLanguageConstraints::CRIMINAL_LANGUAGE_UNIQUE => [
+                                    'title' => 'Язык уже добавлен',
+                                    'body' => 'У этого преступника уже указан такой язык.',
+                                ],
+                            ]);
+
+                            if (! $handled) {
+                                throw $exception;
+                            }
+
+                            $action->halt();
+                        }
+                    }),
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make()
-                    ->modalHeading(fn ($record) => "Удалить запись: {$record->language->name}?"),
+                EditAction::make()
+                    ->modalHeading(fn (SpokenLanguage $record) => 'Редактировать язык: '.$record->language->name)
+                    ->schema(fn (Schema $schema, SpokenLanguage $record) => $schema->components([
+                        Select::make('level')
+                            ->label('Уровень владения')
+                            ->options(LanguageLevel::options())
+                    ]))
+                    ->using(function (array $data, SpokenLanguage $record, EditAction $action) {
+                        try {
+                            $record->update($data);
+
+                            return $record;
+                        } catch (QueryException $exception) {
+                            $handled = UniqueConstraintHandler::handle($exception, [
+                                SpokenLanguageConstraints::CRIMINAL_LANGUAGE_UNIQUE => [
+                                    'title' => 'Язык уже добавлен',
+                                    'body' => 'У этого преступника уже указан такой язык.',
+                                ],
+                            ]);
+
+                            if (! $handled) {
+                                throw $exception;
+                            }
+
+                            $action->halt();
+                        }
+                    }),
+                DeleteAction::make(),
             ]);
     }
 }
