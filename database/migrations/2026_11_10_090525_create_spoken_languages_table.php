@@ -25,10 +25,10 @@ return new class extends Migration
 
             $table->unique(
                 ['criminal_id', 'language_id'],
-                'spoken_languages_criminal_language_unique'
+                'spoken_languages_criminal_language_ux'
             );
 
-            $table->index('language_id');
+            $table->index('language_id', 'spoken_languages_language_id_idx');
         });
     }
 
