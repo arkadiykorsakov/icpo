@@ -79,8 +79,7 @@ class SightingsRelationManager extends RelationManager
 
                 TextColumn::make('effective_time')
                     ->label('Время')
-                    ->time('H:i')
-                    ->placeholder('Неизвестно'),
+                    ->time('H:i'),
 
                 TextColumn::make('description')
                     ->label('Комментарий')

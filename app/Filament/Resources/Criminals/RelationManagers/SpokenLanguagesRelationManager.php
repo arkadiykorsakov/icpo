@@ -53,7 +53,6 @@ class SpokenLanguagesRelationManager extends RelationManager
     {
         return $table
             ->defaultSort('language_id')
-            ->recordTitleAttribute('language_id')
             ->columns([
                 TextColumn::make('language.name')
                     ->label('Язык')

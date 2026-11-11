@@ -9,8 +9,6 @@ use Filament\Tables\Table;
 
 class CountriesTable
 {
-    protected static ?string $recordTitleAttribute = 'name';
-
     public static function configure(Table $table): Table
     {
         return $table

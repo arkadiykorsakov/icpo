@@ -10,6 +10,8 @@ class ListCriminals extends ListRecords
 {
     protected static string $resource = CriminalResource::class;
 
+    protected static ?string $title = 'Преступники';
+
     protected function getHeaderActions(): array
     {
         return [

@@ -16,14 +16,11 @@ use Filament\Tables\Table;
 class HairColorResource extends Resource
 {
     protected static ?string $model = HairColor::class;
-
     protected static ?string $breadcrumb = 'Цвет волос';
-
-    protected static string|null|\UnitEnum $navigationGroup = 'Справочники';
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::Swatch;
-
     protected static ?string $navigationLabel = 'Цвет волос';
+    protected static ?string $pluralModelLabel = 'цветов';
+    protected static string|null|\UnitEnum $navigationGroup = 'Справочники';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Swatch;
 
     public static function form(Schema $schema): Schema
     {

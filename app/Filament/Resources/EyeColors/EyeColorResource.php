@@ -17,12 +17,10 @@ class EyeColorResource extends Resource
 {
     protected static ?string $model = EyeColor::class;
     protected static ?string $breadcrumb = 'Цвет глаз';
-
-    protected static string|null|\UnitEnum $navigationGroup = 'Справочники';
-
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::Swatch;
-
     protected static ?string $navigationLabel = 'Цвет глаз';
+    protected static ?string $pluralModelLabel = 'цветов';
+    protected static string|null|\UnitEnum $navigationGroup = 'Справочники';
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Swatch;
 
     public static function form(Schema $schema): Schema
     {

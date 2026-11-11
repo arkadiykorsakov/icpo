@@ -21,9 +21,9 @@ use Filament\Tables\Table;
 class CriminalResource extends Resource
 {
     protected static ?string $model = Criminal::class;
-
-    protected static ?string $pluralModelLabel = 'Преступники';
-
+    protected static ?string $breadcrumb = 'Преступники';
+    protected static ?string $navigationLabel = 'Преступники';
+    protected static ?string $pluralModelLabel = 'преступников';
     protected static string|BackedEnum|null $navigationIcon = Heroicon::FingerPrint;
 
     public static function form(Schema $schema): Schema

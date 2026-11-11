@@ -10,6 +10,8 @@ class ListCountries extends ListRecords
 {
     protected static string $resource = CountryResource::class;
 
+    protected static ?string $title = 'Страны';
+
     protected function getHeaderActions(): array
     {
         return [

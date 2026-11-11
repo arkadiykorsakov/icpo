@@ -110,15 +110,13 @@ class CriminalsTable
 
                 TextColumn::make('hairColor.name')
                     ->label('Цвет волос')
-                    ->formatStateUsing(
-                        fn ($state, Criminal $record) => ! $record->has_head_hair
-                            ? '—'
-                            : ($state ?: 'Неизвестно')
+                    ->state(fn (Criminal $record): string =>
+                        ! $record->has_head_hair
+                            ? '-'
+                            : ($record->hairColor?->name ?? 'Неизвестно')
                     ),
-
                 TextColumn::make('eyeColor.name')
-                    ->label('Цвет глаз')
-                    ->placeholder('Неизвестно'),
+                    ->label('Цвет глаз'),
 
                 TextColumn::make('birth_date')
                     ->label('Дата рождения')
@@ -180,7 +178,7 @@ class CriminalsTable
 
                         $countryId = $data['birth_country_id'] ?? null;
 
-                        // Нет страны — нет и индикатора города.
+                        // Нет страны - нет и индикатора города.
                         if (! $countryId) {
                             return $indicators;
                         }

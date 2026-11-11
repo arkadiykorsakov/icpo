@@ -16,9 +16,9 @@ use Filament\Tables\Table;
 class LanguageResource extends Resource
 {
     protected static ?string $model = Language::class;
-
-    protected static ?string $pluralModelLabel = 'Языки';
-
+    protected static ?string $breadcrumb = 'Языки';
+    protected static ?string $navigationLabel = 'Языки';
+    protected static ?string $pluralModelLabel = 'языков';
     protected static string|null|\UnitEnum $navigationGroup = 'Справочники';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLanguage;
