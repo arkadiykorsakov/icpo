@@ -25,6 +25,19 @@ class CriminalSeeder extends Seeder
         'Королева', 'Тень', 'Графиня',
     ];
 
+    private const NOTES = [
+        'Ранее привлекался к уголовной ответственности.',
+        'Имеет связи в криминальной среде.',
+        'Склонен к совершению имущественных преступлений.',
+        'Находится под наблюдением правоохранительных органов.',
+        'Ранее неоднократно задерживался.',
+        'Предположительно связан с организованной преступной группой.',
+        'Ведёт скрытный образ жизни.',
+        'Имеет судимость за кражу.',
+        'Может использовать поддельные документы.',
+        'Предпочитает действовать в одиночку.',
+    ];
+
     public function run(): void
     {
         $faker = FakerFactory::create('ru_RU');
@@ -38,28 +51,37 @@ class CriminalSeeder extends Seeder
         $rows = [];
 
         for ($i = 0; $i < self::COUNT; $i++) {
-            // Значения enum совпадают с 'male' / 'female' в Faker
             $gender = $faker->randomElement(Gender::cases());
 
-            // CHECK: has_head_hair OR hair_color_id IS NULL
             $hasHair = $faker->boolean(85);
 
             $nicknames = $gender === Gender::Female
-                ? array_merge(self::NICKNAMES_FEMALE, self::NICKNAMES_FEMALE, self::NICKNAMES_COMMON)
+                ? array_merge(
+                    self::NICKNAMES_FEMALE,
+                    self::NICKNAMES_COMMON
+                )
                 : self::NICKNAMES_COMMON;
 
             $rows[] = [
-                // Всегда известны (NOT NULL)
                 'last_name'     => $faker->lastName($gender->value),
                 'first_name'    => $faker->firstName($gender->value),
                 'gender'        => $gender->value,
 
-                // Может отсутствовать
-                'middle_name'   => $faker->boolean(75) ? $faker->middleName($gender->value) : null,
-                'nickname'      => $faker->boolean(40) ? $faker->randomElement($nicknames) : null,
+                'middle_name'   => $faker->boolean(75)
+                    ? $faker->middleName($gender->value)
+                    : null,
 
-                'height_cm'     => $faker->boolean(95) ? $faker->numberBetween(150, 205) : null,
-                'weight_kg'     => $faker->boolean(90) ? $faker->randomFloat(1, 45, 130) : null,
+                'nickname'      => $faker->boolean(40)
+                    ? $faker->randomElement($nicknames)
+                    : null,
+
+                'height_cm'     => $faker->boolean(95)
+                    ? $faker->numberBetween(150, 205)
+                    : null,
+
+                'weight_kg'     => $faker->boolean(90)
+                    ? $faker->randomFloat(1, 45, 130)
+                    : null,
 
                 'has_head_hair' => $hasHair,
                 'hair_color_id' => $hasHair ? $pick($hairColorIds) : null,
@@ -68,9 +90,17 @@ class CriminalSeeder extends Seeder
                 'birth_date'    => $faker->boolean(90)
                     ? $faker->dateTimeBetween('-70 years', '-18 years')->format('Y-m-d')
                     : null,
-                'birth_city_id' => $faker->boolean(85) ? $pick($cityIds) : null,
 
-                'notes'         => $faker->boolean(30) ? $faker->sentence(10) : null,
+                'birth_city_id' => $faker->boolean(85)
+                    ? $pick($cityIds)
+                    : null,
+
+                'notes'         => $faker->boolean(30)
+                    ? $faker->randomElement(self::NOTES)
+                    : null,
+
+                'created_at' => now(),
+                'updated_at' => now(),
             ];
         }
 
