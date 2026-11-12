@@ -112,4 +112,9 @@ class Criminal extends Model
             ])->filter()->implode(' '),
         );
     }
+
+    public function offenses(): HasMany
+    {
+        return $this->hasMany(CriminalOffense::class);
+    }
 }

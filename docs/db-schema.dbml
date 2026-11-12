@@ -317,17 +317,22 @@ Table citizenships {
 }
 
 Table criminal_offenses {
+  id                  BIGSERIAL    [pk]
   criminal_id         BIGINT       [not null, ref: > criminals.id]
   offense_category_id BIGINT       [not null, ref: > offense_categories.id]
-  created_at          TIMESTAMPTZ  [not null, default: `NOW()`]
+  reason              TEXT         [not null]
+  effective_date      DATE         [not null]
+  created_at          TIMESTAMPTZ  [null]
+  updated_at          TIMESTAMPTZ  [null]
 
   indexes {
-    (criminal_id, offense_category_id) [pk]
-    offense_category_id
+    (criminal_id, effective_date) [name: 'criminal_offenses_criminal_date_idx']
+    offense_category_id           [name: 'criminal_offenses_category_idx']
   }
 
   Note: '''
-  Таблица связывает людей с категориями преступлений.
+  Таблица хранит преступления человека: категория, основание и дата.
+  Один человек может иметь несколько записей одной категории в разные даты.
 
   FK criminal_id: ON DELETE CASCADE.
   FK offense_category_id: ON DELETE RESTRICT.
