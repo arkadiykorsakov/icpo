@@ -1,16 +1,6 @@
 // ============================================================
 // ENUMS
 // ============================================================
-
-Enum criminal_status {
-  wanted
-  serving
-  retired
-  deceased
-  detained
-  acquitted
-}
-
 Enum language_level {
   A1
   A2
@@ -341,53 +331,5 @@ Table criminal_offenses {
 
   FK criminal_id: ON DELETE CASCADE.
   FK offense_category_id: ON DELETE RESTRICT.
-  '''
-}
-
-// ============================================================
-// ИСТОРИЯ СТАТУСОВ
-// ============================================================
-
-Table criminal_status_history {
-  id           BIGSERIAL       [pk]
-  criminal_id  BIGINT          [not null, ref: > criminals.id]
-  status       criminal_status [not null]
-
-  effective_at TIMESTAMPTZ     [not null]
-  description  TEXT
-
-  created_at   TIMESTAMPTZ     [not null, default: `NOW()`]
-  updated_at   TIMESTAMPTZ     [not null, default: `NOW()`]
-
-  indexes {
-    (criminal_id, effective_at)
-    status
-  }
-
-  checks {
-    `effective_at <= created_at`
-  }
-
-  Note: '''
-  Таблица хранит историю изменения статусов человека.
-
-  effective_at:
-    Фактическая дата и время изменения статуса.
-    Должна быть позже effective_at предыдущего статуса этого человека.
-    Не может быть в будущем.
-
-  description:
-    Причина изменения статуса или дополнительные сведения.
-    Может быть NULL.
-
-  Валидация хронологии:
-    При добавлении нового статуса effective_at должен быть
-    больше максимального effective_at существующих записей
-    этого человека.
-
-    При редактировании effective_at должен оставаться
-    между датами предыдущего и следующего статусов.
-
-  FK criminal_id: ON DELETE CASCADE.
   '''
 }
