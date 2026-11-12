@@ -8,16 +8,20 @@ use App\Models\Country;
 use App\Models\Criminal;
 use App\Models\EyeColor;
 use App\Models\HairColor;
-use Filament\Actions\ViewAction;
-use Filament\Support\Colors\Color;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
+use Filament\Support\Colors\Color;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\Indicator;
@@ -25,27 +29,28 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use EslamRedaDiv\TimezoneDetector\Facades\TimezoneDetector;
+use Illuminate\Support\Carbon;
 
 class CriminalsTable
 {
     public static function configure(Table $table): Table
     {
-        $bounds = Criminal::query()
+        $bounds = Criminal::withTrashed()
+            ->toBase()
             ->selectRaw('
-                MIN(height_cm) AS min_height,
-                MAX(height_cm) AS max_height,
-                MIN(weight_kg) AS min_weight,
-                MAX(weight_kg) AS max_weight,
-                MIN(birth_date) AS min_birth_date,
-                MAX(birth_date) AS max_birth_date
+                MIN(height_cm)   AS min_height,
+                MAX(height_cm)   AS max_height,
+                MIN(weight_kg)   AS min_weight,
+                MAX(weight_kg)   AS max_weight,
+                MIN(birth_date)  AS min_birth_date,
+                MAX(birth_date)  AS max_birth_date
             ')
             ->first();
 
-        $minHeight = $bounds->min_height;
-        $maxHeight = $bounds->max_height;
-        $minWeight = $bounds->min_weight;
-        $maxWeight = $bounds->max_weight;
+        $minHeight    = $bounds->min_height;
+        $maxHeight    = $bounds->max_height;
+        $minWeight    = $bounds->min_weight;
+        $maxWeight    = $bounds->max_weight;
         $minBirthDate = $bounds->min_birth_date;
         $maxBirthDate = $bounds->max_birth_date;
 
@@ -54,6 +59,7 @@ class CriminalsTable
                 'hairColor',
                 'eyeColor',
                 'birthCity',
+                'deathCity',
             ]))
             ->columns([
                 TextColumn::make('last_name')
@@ -110,11 +116,11 @@ class CriminalsTable
 
                 TextColumn::make('hairColor.name')
                     ->label('Цвет волос')
-                    ->state(fn (Criminal $record): string =>
-                        ! $record->has_head_hair
-                            ? '-'
-                            : ($record->hairColor?->name ?? 'Неизвестно')
+                    ->state(fn (Criminal $record): string => ! $record->has_head_hair
+                        ? '-'
+                        : ($record->hairColor?->name ?? 'Неизвестно')
                     ),
+
                 TextColumn::make('eyeColor.name')
                     ->label('Цвет глаз'),
 
@@ -127,6 +133,15 @@ class CriminalsTable
                     ->label('Город рождения')
                     ->searchable(),
 
+                TextColumn::make('death_date')
+                    ->label('Дата смерти')
+                    ->date('d.m.Y')
+                    ->sortable(),
+
+                TextColumn::make('deathCity.full_name')
+                    ->label('Город смерти')
+                    ->searchable(),
+
                 TextColumn::make('created_at')
                     ->label('Создан')
                     ->dateTime('d.m.Y H:i')
@@ -136,6 +151,17 @@ class CriminalsTable
                     ->label('Обновлён')
                     ->dateTime('d.m.Y H:i')
                     ->toUserTimezone(),
+
+                ToggleColumn::make('is_archived')
+                    ->label('Архив')
+                    ->disabled(fn (Criminal $record): bool => $record->trashed())
+                    ->visible(fn ($livewire) => $livewire->activeTab !== 'deleted'),
+
+                TextColumn::make('deleted_at')
+                    ->label('Удалён')
+                    ->dateTime('d.m.Y H:i')
+                    ->toUserTimezone()
+                    ->visible(fn ($livewire) => $livewire->activeTab === 'deleted'),
             ])
             ->filters([
                 Filter::make('birth_location')
@@ -146,7 +172,10 @@ class CriminalsTable
                                 Select::make('birth_country_id')
                                     ->label('Страна рождения')
                                     ->options(fn () => Country::query()
-                                        ->whereHas('birthCriminals')
+                                        ->whereHas(
+                                            'birthCriminals',
+                                            fn (Builder $q) => $q->withTrashed()
+                                        )
                                         ->orderBy('name')
                                         ->pluck('name', 'id')
                                         ->all()
@@ -162,7 +191,10 @@ class CriminalsTable
                                     ->options(fn (Get $get) => $get('birth_country_id')
                                         ? City::query()
                                             ->where('country_id', $get('birth_country_id'))
-                                            ->whereHas('birthCriminals')
+                                            ->whereHas(
+                                                'birthCriminals',
+                                                fn (Builder $q) => $q->withTrashed()
+                                            )
                                             ->orderBy('name')
                                             ->pluck('name', 'id')
                                             ->all()
@@ -184,16 +216,14 @@ class CriminalsTable
                         }
 
                         if ($country = Country::find($countryId)) {
-                            $indicators[] = Indicator::make(
-                                'Страна: ' . $country->name
-                            )->removeField('birth_country_id');
+                            $indicators[] = Indicator::make('Страна: ' . $country->name)
+                                ->removeField('birth_country_id');
                         }
 
                         if ($cityId = ($data['birth_city_id'] ?? null)) {
                             if ($city = City::find($cityId)) {
-                                $indicators[] = Indicator::make(
-                                    'Город: ' . $city->name
-                                )->removeField('birth_city_id');
+                                $indicators[] = Indicator::make('Город: ' . $city->name)
+                                    ->removeField('birth_city_id');
                             }
                         }
 
@@ -211,10 +241,7 @@ class CriminalsTable
                         return $query
                             ->whereHas(
                                 'birthCity',
-                                fn (Builder $cityQuery) => $cityQuery->where(
-                                    'country_id',
-                                    $countryId
-                                )
+                                fn (Builder $cityQuery) => $cityQuery->where('country_id', $countryId)
                             )
                             ->when(
                                 $cityId,
@@ -264,26 +291,28 @@ class CriminalsTable
 
                         if ($data['from'] ?? null) {
                             $indicators[] = Indicator::make(
-                                'Дата рождения с: ' . $data['from']
+                                'Дата рождения с: ' . Carbon::parse($data['from'])->format('d.m.Y')
                             )->removeField('from');
                         }
 
                         if ($data['to'] ?? null) {
                             $indicators[] = Indicator::make(
-                                'Дата рождения по: ' . $data['to']
+                                'Дата рождения по: ' . Carbon::parse($data['to'])->format('d.m.Y')
                             )->removeField('to');
                         }
 
                         return $indicators;
                     })
                     ->query(fn (Builder $query, array $data): Builder => $query
+                        // birth_date имеет тип DATE, whereDate() не нужен
+                        // и мешает использованию индекса.
                         ->when(
                             $data['from'] ?? null,
-                            fn (Builder $q, $date) => $q->whereDate('birth_date', '>=', $date)
+                            fn (Builder $q, $date) => $q->where('birth_date', '>=', $date)
                         )
                         ->when(
                             $data['to'] ?? null,
-                            fn (Builder $q, $date) => $q->whereDate('birth_date', '<=', $date)
+                            fn (Builder $q, $date) => $q->where('birth_date', '<=', $date)
                         )
                     ),
 
@@ -319,6 +348,21 @@ class CriminalsTable
             ->recordActions([
                 EditAction::make(),
                 ViewAction::make(),
+                DeleteAction::make()
+                    ->modalHeading(fn (Criminal $record) => "Удалить запись: {$record->full_name}?")
+                    ->modalDescription('Запись будет перемещена во вкладку «Удалённые». Её можно будет восстановить.')
+                    ->modalSubmitActionLabel('Удалить')
+                    ->successNotificationTitle('Запись удалена'),
+
+                RestoreAction::make()
+                    ->modalHeading(fn (Criminal $record) => "Восстановить запись: {$record->full_name}?")
+                    ->successNotificationTitle('Запись восстановлена'),
+
+                ForceDeleteAction::make()
+                    ->modalHeading(fn (Criminal $record) => "Удалить навсегда: {$record->full_name}?")
+                    ->modalDescription('Запись и связанные данные (гражданства, языки, наблюдения) будут удалены безвозвратно.')
+                    ->modalSubmitActionLabel('Удалить навсегда')
+                    ->successNotificationTitle('Запись удалена навсегда'),
             ])
             ->toolbarActions([
                 //
@@ -358,9 +402,11 @@ class CriminalsTable
         };
 
         $extraAttributes = [];
+
         if ($min !== null && $max !== null) {
             $minJs = (float) $min;
             $maxJs = (float) $max;
+
             $extraAttributes = [
                 'onblur' => "if (this.value === '') return; "
                     . "const v = parseFloat(this.value); if (isNaN(v)) return; "
@@ -370,8 +416,14 @@ class CriminalsTable
         }
 
         $baseRules = ['numeric'];
-        if ($min !== null) $baseRules[] = 'gte:' . $min;
-        if ($max !== null) $baseRules[] = 'lte:' . $max;
+
+        if ($min !== null) {
+            $baseRules[] = 'gte:' . $min;
+        }
+
+        if ($max !== null) {
+            $baseRules[] = 'lte:' . $max;
+        }
 
         return Filter::make($name)
             ->label($label)
@@ -401,21 +453,25 @@ class CriminalsTable
             ])
             ->indicateUsing(function (array $data) use ($label, $unit): array {
                 $indicators = [];
+
                 foreach (['from', 'to'] as $key) {
                     if (($data[$key] ?? null) !== null && $data[$key] !== '') {
                         $prefix = $key === 'from' ? 'от' : 'до';
+
                         $indicators[] = Indicator::make(
                             "{$label} {$prefix}: {$data[$key]} {$unit}"
                         )->removeField($key);
                     }
                 }
+
                 return $indicators;
             })
             ->query(function (Builder $query, array $data) use ($column): Builder {
                 $from = $data['from'] ?? null;
-                $to   = $data['to']   ?? null;
+                $to   = $data['to'] ?? null;
+
                 $hasFrom = $from !== null && $from !== '';
-                $hasTo   = $to   !== null && $to   !== '';
+                $hasTo   = $to !== null && $to !== '';
 
                 if ($hasFrom && $hasTo && (float) $from > (float) $to) {
                     return $query->whereRaw('1 = 0');
@@ -423,7 +479,7 @@ class CriminalsTable
 
                 return $query
                     ->when($hasFrom, fn (Builder $q) => $q->where($column, '>=', $from))
-                    ->when($hasTo,   fn (Builder $q) => $q->where($column, '<=', $to));
+                    ->when($hasTo, fn (Builder $q) => $q->where($column, '<=', $to));
             });
     }
 }

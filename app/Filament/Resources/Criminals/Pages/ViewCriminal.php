@@ -12,7 +12,7 @@ class ViewCriminal extends ViewRecord
 
     public function getTitle(): string
     {
-        return 'Просмотр преступника: ' . $this->record->last_name . ' ' . $this->record->first_name . ' ' . ($this->record->middle_name ?? '');
+        return 'Просмотр преступника: ' . $this->record->full_name;
     }
 
     protected function getHeaderActions(): array

@@ -12,7 +12,7 @@ class EditCriminal extends EditRecord
 
     public function getTitle(): string
     {
-        return 'Обновить преступника: ' . $this->record->last_name . ' ' . $this->record->first_name . ' ' . ($this->record->middle_name ?? '');
+        return 'Обновить преступника: ' . $this->record->full_name;
     }
 
     public function getRelationManagers(): array

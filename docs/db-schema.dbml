@@ -22,8 +22,8 @@ Enum language_level {
 }
 
 Enum gender {
-    male
-    female
+  male
+  female
 }
 
 // ============================================================
@@ -153,7 +153,7 @@ Table criminals {
   middle_name         VARCHAR(255)
   nickname            VARCHAR(255)
 
-  gender              gender        [not null, default: 'male']
+  gender              gender       [not null]
 
   height_cm           INT
   weight_kg           NUMERIC(4,1)
@@ -165,10 +165,16 @@ Table criminals {
   birth_date          DATE
   birth_city_id       BIGINT       [ref: >? cities.id]
 
+  death_date          DATE
+  death_city_id       BIGINT       [ref: >? cities.id]
+
+  is_archived         BOOLEAN      [not null, default: false]
+
   notes               TEXT
 
   created_at          TIMESTAMPTZ  [not null, default: `NOW()`]
   updated_at          TIMESTAMPTZ  [not null, default: `NOW()`]
+  deleted_at          TIMESTAMPTZ
 
   indexes {
     (last_name, first_name) [name: 'criminals_last_first_name_idx']
@@ -176,6 +182,8 @@ Table criminals {
     birth_city_id           [name: 'criminals_birth_city_id_idx']
     hair_color_id           [name: 'criminals_hair_color_id_idx']
     eye_color_id            [name: 'criminals_eye_color_id_idx']
+    death_date              [name: 'criminals_death_date_idx']
+    death_city_id           [name: 'criminals_death_city_id_idx']
 
     `last_name || ' ' || first_name || COALESCE(' ' || middle_name, '') || COALESCE(' ' || nickname, '')` [
       name: 'criminals_search_trgm_idx',
@@ -185,29 +193,67 @@ Table criminals {
   }
 
   checks {
-    `birth_date IS NULL OR birth_date <= CURRENT_DATE`   [name: 'criminals_birth_date_check']
+    `birth_date IS NULL OR birth_date <= CURRENT_DATE`
+      [name: 'criminals_birth_date_check']
 
-    `height_cm IS NULL OR height_cm BETWEEN 30 AND 280`  [name: 'criminals_height_cm_check']
-    `weight_kg IS NULL OR weight_kg BETWEEN 0.5 AND 500` [name: 'criminals_weight_kg_check']
+    `height_cm IS NULL OR height_cm BETWEEN 30 AND 280`
+      [name: 'criminals_height_cm_check']
 
-    `has_head_hair OR hair_color_id IS NULL`             [name: 'criminals_head_hair_check']
+    `weight_kg IS NULL OR weight_kg BETWEEN 0.5 AND 500`
+      [name: 'criminals_weight_kg_check']
+
+    `has_head_hair OR hair_color_id IS NULL`
+      [name: 'criminals_head_hair_check']
+
+    `death_date IS NULL OR (
+      death_date <= CURRENT_DATE
+      AND (
+        birth_date IS NULL
+        OR death_date >= birth_date
+      )
+    )`
+      [name: 'criminals_death_date_check']
+
+    `deleted_at IS NULL OR death_date IS NOT NULL`
+      [name: 'criminals_deleted_requires_death_check']
   }
 
   Note: '''
-  Семантика волос:
+    Семантика волос:
 
-  has_head_hair = FALSE AND hair_color_id IS NULL:
-    Волосы на голове отсутствуют.
+    has_head_hair = FALSE AND hair_color_id IS NULL:
+      Волосы на голове отсутствуют.
 
-  has_head_hair = TRUE AND hair_color_id IS NULL:
-    Волосы есть, цвет неизвестен.
+    has_head_hair = TRUE AND hair_color_id IS NULL:
+      Волосы есть, цвет неизвестен.
 
-  has_head_hair = TRUE AND hair_color_id IS NOT NULL:
-    Волосы есть, цвет известен.
+    has_head_hair = TRUE AND hair_color_id IS NOT NULL:
+      Волосы есть, цвет известен.
 
-  FK hair_color_id: ON DELETE RESTRICT.
-  FK eye_color_id: ON DELETE RESTRICT.
-  FK birth_city_id: ON DELETE RESTRICT.
+    Связи с городами:
+      birth_city_id заполняется только при наличии birth_date.
+      death_city_id заполняется только при наличии death_date.
+      Инвариант поддерживается моделью (событие saving).
+
+    FK hair_color_id: ON DELETE RESTRICT.
+    FK eye_color_id: ON DELETE RESTRICT.
+    FK birth_city_id: ON DELETE RESTRICT.
+    FK death_city_id: ON DELETE RESTRICT.
+
+    is_archived:
+      Логическая архивация записи.
+
+    deleted_at:
+      Soft delete. Удалить можно только запись с death_date
+      (CHECK criminals_deleted_requires_death_check, права в CriminalPolicy).
+
+    Частичные индексы (создаются в миграции, в DBML не выражаются):
+      criminals_active_name_idx
+        (last_name, first_name) WHERE deleted_at IS NULL AND is_archived = false
+      criminals_archived_name_idx
+        (last_name, first_name) WHERE deleted_at IS NULL AND is_archived = true
+      criminals_deleted_idx
+        (deleted_at) WHERE deleted_at IS NOT NULL
   '''
 }
 
@@ -281,9 +327,9 @@ Table citizenships {
 }
 
 Table criminal_offenses {
-  criminal_id        BIGINT       [not null, ref: > criminals.id]
-  offense_category_id BIGINT      [not null, ref: > offense_categories.id]
-  created_at         TIMESTAMPTZ  [not null, default: `NOW()`]
+  criminal_id         BIGINT       [not null, ref: > criminals.id]
+  offense_category_id BIGINT       [not null, ref: > offense_categories.id]
+  created_at          TIMESTAMPTZ  [not null, default: `NOW()`]
 
   indexes {
     (criminal_id, offense_category_id) [pk]
